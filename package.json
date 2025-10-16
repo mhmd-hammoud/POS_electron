@@ -24,9 +24,11 @@
 		"rebuild-app": "electron-builder install-app-deps",
 		"electron": "wait-on tcp:3000 && electron .",
 		"start-electron-app": "concurrently -k \"cross-env BROWSER=none npm run start\" \"cross-env NODE_ENV=development  npm run electron\"",
-		"package-windows": "rm -rf build && rm -rf dist && npm run build && electron-builder -w -c.extraMetadata.main=build/electron.js",
-		"package-mac": "rm -rf build && rm -rf dist && npm run build && electron-builder build  -m -c.extraMetadata.main=build/electron.js ",
-		"package-linux": "rm -rf build && rm -rf dist && npm run build && electron-builder -l -c.extraMetadata.main=build/electron.js"
+		"clean": "rimraf build dist",
+		"prepare-electron": "node -e \"const fs=require('fs');fs.copyFileSync('public/electron.js','build/electron.js');fs.copyFileSync('public/preload.js','build/preload.js');\"",
+		"package-windows": "npm run clean && npm run build && npm run prepare-electron && electron-builder -w -c.extraMetadata.main=build/electron.js",
+		"package-mac": "npm run clean && npm run build && npm run prepare-electron && electron-builder build -m -c.extraMetadata.main=build/electron.js",
+		"package-linux": "npm run clean && npm run build && npm run prepare-electron && electron-builder -l -c.extraMetadata.main=build/electron.js"
 	},
 	"eslintConfig": {
 		"extends": [
@@ -52,6 +54,7 @@
 		"cross-env": "^7.0.3",
 		"electron": "^25.0.1",
 		"electron-builder": "^24.4.0",
+		"rimraf": "^5.0.10",
 		"wait-on": "^7.0.1"
 	},
 	"build": {
